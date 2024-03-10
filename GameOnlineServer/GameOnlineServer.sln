@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34018.315
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOnlineServer", "GameOnlineServer\GameOnlineServer.csproj", "{17594EA3-64D3-4CE9-805A-B9AB5DF6E70A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameDatabase", "GameDatabase\GameDatabase.csproj", "{58D823C1-308B-4666-AAA5-9FC4CE59CABF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{17594EA3-64D3-4CE9-805A-B9AB5DF6E70A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17594EA3-64D3-4CE9-805A-B9AB5DF6E70A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17594EA3-64D3-4CE9-805A-B9AB5DF6E70A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17594EA3-64D3-4CE9-805A-B9AB5DF6E70A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58D823C1-308B-4666-AAA5-9FC4CE59CABF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58D823C1-308B-4666-AAA5-9FC4CE59CABF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58D823C1-308B-4666-AAA5-9FC4CE59CABF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58D823C1-308B-4666-AAA5-9FC4CE59CABF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {83C93ECE-502A-46F2-99DE-0A1DD0C94862}
+	EndGlobalSection
+EndGlobal

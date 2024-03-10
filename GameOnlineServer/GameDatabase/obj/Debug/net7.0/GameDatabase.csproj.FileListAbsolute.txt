@@ -1,0 +1,12 @@
+C:\Users\ASUS\Desktop\GameServer\GameOnlineServer\GameDatabase\bin\Debug\net7.0\GameDatabase.deps.json
+C:\Users\ASUS\Desktop\GameServer\GameOnlineServer\GameDatabase\bin\Debug\net7.0\GameDatabase.dll
+C:\Users\ASUS\Desktop\GameServer\GameOnlineServer\GameDatabase\bin\Debug\net7.0\GameDatabase.pdb
+C:\Users\ASUS\Desktop\GameServer\GameOnlineServer\GameDatabase\obj\Debug\net7.0\GameDatabase.csproj.AssemblyReference.cache
+C:\Users\ASUS\Desktop\GameServer\GameOnlineServer\GameDatabase\obj\Debug\net7.0\GameDatabase.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ASUS\Desktop\GameServer\GameOnlineServer\GameDatabase\obj\Debug\net7.0\GameDatabase.AssemblyInfoInputs.cache
+C:\Users\ASUS\Desktop\GameServer\GameOnlineServer\GameDatabase\obj\Debug\net7.0\GameDatabase.AssemblyInfo.cs
+C:\Users\ASUS\Desktop\GameServer\GameOnlineServer\GameDatabase\obj\Debug\net7.0\GameDatabase.csproj.CoreCompileInputs.cache
+C:\Users\ASUS\Desktop\GameServer\GameOnlineServer\GameDatabase\obj\Debug\net7.0\GameDatabase.dll
+C:\Users\ASUS\Desktop\GameServer\GameOnlineServer\GameDatabase\obj\Debug\net7.0\refint\GameDatabase.dll
+C:\Users\ASUS\Desktop\GameServer\GameOnlineServer\GameDatabase\obj\Debug\net7.0\GameDatabase.pdb
+C:\Users\ASUS\Desktop\GameServer\GameOnlineServer\GameDatabase\obj\Debug\net7.0\ref\GameDatabase.dll
