@@ -33,7 +33,6 @@ namespace GameOnlineServer.Application.Handlers
         protected override void OnDisconnected(TcpSession session)
         {
             playerManager.RemovePlayer(session.Id.ToString());
-            logger.Info($"Client disconnected: {session.Id}");
         }
         public void StartServer()
         {

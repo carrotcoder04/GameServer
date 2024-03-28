@@ -18,20 +18,20 @@ namespace GameOnlineServer
             var mongodb = new MongoDb();
             IPlayerManager playerManager = new PlayerManager(logger);
             IRoomManager roomManager = new RoomManager();
-            var wsSever = new WsGameServer(IPAddress.Any,8080,playerManager,logger,mongodb,roomManager);
-            wsSever.StartServer();
+            var wsServer = new WsGameServer(IPAddress.Any,8080,playerManager,logger,mongodb,roomManager);
+            wsServer.StartServer();
             while (true)
             {
                 var type = Console.ReadLine();
                 if (type == "restart")
                 {
                     logger.Print("Game Server Restarting...");
-                    wsSever.RestartServer();
+                    wsServer.RestartServer();
                 }
                 else if(type == "stop")
                 {
                     logger.Print("Game Server Shutdown");
-                    wsSever.StopServer();
+                    wsServer.StopServer();
                 }
             }
         }

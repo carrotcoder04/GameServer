@@ -1,5 +1,6 @@
 ﻿using GameOnlineServer.Application.Interfaces;
 using GameOnlineServer.Application.Messaging;
+using GameOnlineServer.Application.Messaging.MessageBinary;
 using GameOnlineServer.Rooms.Handlers;
 using System;
 using System.Collections.Concurrent;
@@ -18,9 +19,8 @@ namespace GameOnlineServer.Rooms.Interfaces
         bool ExitRoom(IPlayer player);
         bool ExitRoom(string id);
         IPlayer FindPlayer(string id);
-        void SendMessage(string message);
-        void SendMessage<T>(WsMessage<T> message);
-        void SendMessage<T>(WsMessage<T> message,string idIgnore);
-        
+        void SendByte(byte tag,string message);
+        void SendByte(byte tag);
+        void SendByte(byte tag, ISerializable data);
     }
 }

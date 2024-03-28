@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace GameOnlineServer.Rooms.Handlers
 {
-    internal class RoomManager : IRoomManager
+    public class RoomManager : IRoomManager
     {
         public BaseRoom lobby { get; set; }
         private ConcurrentDictionary<string,BaseRoom> rooms {  get; set; }
-        public RoomManager() 
+        public RoomManager()
         { 
-            rooms = new ConcurrentDictionary<string,BaseRoom>();
             lobby = new BaseRoom();
+            rooms = new ConcurrentDictionary<string,BaseRoom>();
         }
         public BaseRoom FindRoom(string id)
         {

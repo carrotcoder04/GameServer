@@ -1,15 +1,8 @@
 ﻿using GameOnlineServer.Application.Handlers;
 using GameOnlineServer.Application.Interfaces;
-using GameOnlineServer.Application.Messaging;
-using GameOnlineServer.Application.Messaging.Constants;
+using GameOnlineServer.Application.Messaging.MessageBinary;
 using GameOnlineServer.Rooms.Interfaces;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace GameOnlineServer.Rooms.Handlers
 {
     public class BaseRoom : IBaseRoom
@@ -17,7 +10,7 @@ namespace GameOnlineServer.Rooms.Handlers
         public string id { get; set; }
         public ConcurrentDictionary<string, IPlayer> players { get; set; }
         public BaseRoom() {
-            id = GameHelper.RandomString(10);
+            id = GameHelper.RandomString(4);
             players = new ConcurrentDictionary<string, IPlayer>();
         }
         public bool ExitRoom(IPlayer player)
@@ -49,51 +42,58 @@ namespace GameOnlineServer.Rooms.Handlers
                 if (players.TryAdd(player.sessionId, player))
                 {
                     this.RoomInfo();
+                    this.SendByte((byte)Room.ROOM_NAME, id);
                     return true;
                 }
             }
             return false;
         }
-
-        public void SendMessage(string message)
+        public bool JoinLobby(IPlayer player)
+        {
+            if (FindPlayer(player.sessionId) == null)
+            {
+                if (players.TryAdd(player.sessionId, player))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public void SendByte(byte tag,string message)
         {
             lock(players)
             {
                 foreach(var player in players.Values)
                 {
-                    player.SendMessage(message);
+                    player.SendByte(tag,message);
                 }
             }
         }
-
-        public void SendMessage<T>(WsMessage<T> message)
+        public void SendByte(byte tag)
         {
-            lock(players)
+            lock (players)
             {
                 foreach (var player in players.Values)
                 {
-                    player.SendMessage(message);
+                    player.SendByte(tag);
+                }
+            }
+        }
+        public void SendByte(byte tag,ISerializable data)
+        {
+            lock (players)
+            {
+                foreach (var player in players.Values)
+                {
+                    player.SendByte(tag,data);
                 }
             }
         }
         private void RoomInfo()
         {
-            var lobby = new LobbyInfo
-            {
-                players = players.Values.Select(p => p.GetUserInfo()).ToList()
-            };
-            var mess = new WsMessage<LobbyInfo>(WsTags.RoomInfo, lobby);
-            this.SendMessage(mess);
-        }
-        public void SendMessage<T>(WsMessage<T> message, string idIgnore)
-        {
-            lock(players)
-            {
-                foreach (var player in players.Values.Where(p => p.sessionId != idIgnore))
-                {
-                    player.SendMessage(message);
-                }
-            }
+            var player = players.Values.Select(p => p.GetPlayerInfo()).ToList();
+            RoomMessage roomMessage = new RoomMessage(player);
+            this.SendByte((byte)Room.ROOM_INFO,roomMessage);
         }
     }
 }

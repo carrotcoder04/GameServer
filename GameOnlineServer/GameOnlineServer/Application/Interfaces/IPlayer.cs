@@ -1,22 +1,22 @@
-﻿using GameOnlineServer.Application.Messaging;
-using GameOnlineServer.Application.Messaging.Constants;
-using GameOnlineServer.GameModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GameOnlineServer.Application.Messaging.MessageBinary;
+using GameOnlineServer.Rooms.Handlers;
 
 namespace GameOnlineServer.Application.Interfaces
 {
     public interface IPlayer
     {
+        public event Action<byte[]> PlayerMessage;
         public string sessionId { get; set; }
         public string name { get; set; }
+        public BaseRoom currentroom { get; set; }
         void SetDisconnected(bool value);
-        bool SendMessage(string mess);
-        void OnDisConnected();
-        bool SendMessage<T>(WsMessage<T> message);
-        UserInfo GetUserInfo();
+        void On_DisConnected();
+        string GetPlayerInfo();
+        void SendByte(byte tag,ISerializable data);
+        void SendByte(byte tag,byte data);
+        void SendByte(byte tag);
+        void SendByte(byte tag, byte[] data);
+        void SendByte(byte tag,string data);
+        void ChangeRoom(BaseRoom room);
     }
 }

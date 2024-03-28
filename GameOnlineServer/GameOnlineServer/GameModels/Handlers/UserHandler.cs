@@ -47,11 +47,8 @@ namespace GameOnlineServer.GameModels.Handlers
         {
             var filter = Builders<User>.Filter.Eq(i => i.id, id);
             var updater = Builders<User>.Update
-                .Set(i => i.password, item.password)
-                .Set(i => i.avatar, item.avatar)
-                .Set(i => i.amount, item.amount)
-                .Set(i => i.updatedAt, DateTime.Now)
-                .Set(i => i.level, item.level);
+                                               .Set(i => i.password, item.password)
+                                               .Set(i => i.updatedAt, DateTime.Now);
             return userDb.Update(filter, updater);
         }
     }
