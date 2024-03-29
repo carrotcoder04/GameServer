@@ -15,6 +15,7 @@ namespace GameOnlineServer.Application.Handlers
         public readonly IPlayerManager playerManager;
         private readonly IGameLogger logger;
         public readonly IRoomManager roomManager;
+        public List<User> listuserinfo;
         private readonly MongoDb mongodb;
         public WsGameServer(IPAddress address, int port, IPlayerManager playerManager,IGameLogger logger,MongoDb mongodb,IRoomManager roomManager) : base(address, port)
         {

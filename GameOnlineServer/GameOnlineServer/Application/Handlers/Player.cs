@@ -9,11 +9,14 @@ using NetCoreServer;
 using System.Text;
 using GameOnlineServer.Application.Messaging.MessageBinary;
 using static GameOnlineServer.Application.Messaging.MessageBinary.BinaryConvert;
+using Amazon.Runtime.Internal.Transform;
+
 namespace GameOnlineServer.Application.Handlers
 {
     public class Player : WsSession, IPlayer
     {
         public event Action<byte[]> PlayerMessage;
+        public byte IdInRoom { get; set; }
         public string sessionId { get;set; }
         public string name { get; set; }
         public bool isDisconnected { get; set; }
@@ -43,12 +46,16 @@ namespace GameOnlineServer.Application.Handlers
                 if (info == Log.LOGIN)
                 {
                     UserMessage user = new UserMessage(buffer);
-                    logger.Info(user.username + " " + user.password);
                     var check = userDb.FindByUsername(user.username);
                     if (check != null)
                     {
                         if (user.password == check.password)
                         {
+                            if(((WsGameServer) Server).playerManager.FindPlayerByUsername(user.username) != null) 
+                            {
+                                this.SendByte((byte)Log.YOU_ARE_LOGGED_IN_SOMEWHERE_ELSE);
+                                return;
+                            }
                             userInfo = check;
                             this.SendByte((byte)Log.LOGIN_SUCCESS);
                             return;
@@ -95,17 +102,13 @@ namespace GameOnlineServer.Application.Handlers
                 {
                     var lobbyMessage = new LobbyMessage(buffer);
                     BaseRoom room = ((WsGameServer) Server).roomManager.FindRoom(lobbyMessage.idroom);
-                    if (room != null && room.players.Count < 2)
+                    if (room != null)
                     {
                         this.PlayerJoinRoom(room);
                     }
                     else if(room == null)
                     {
                         this.SendByte((byte)Lobby.ROOM_NOT_FOUND);
-                    }
-                    else if(room.players.Count >= 2)
-                    {
-                        this.SendByte((byte)Lobby.ROOM_FULL);
                     }
                 }
                 else if (info == Lobby.CREATE_ROOM)
@@ -123,16 +126,13 @@ namespace GameOnlineServer.Application.Handlers
             try
             {
                 Room info = (Room)buffer[0];
-                if(info == Room.PLAY)
+                if (info == Room.PLAY)
                 {
-                    if (currentroom.players.Count == 2)
+                    currentroom.SendByte((byte)Room.PLAY);
+                    foreach (var player in currentroom.players.Values)
                     {
-                        currentroom.SendByte((byte)Room.PLAY);
-                        foreach (var player in currentroom.players.Values)
-                        {
-                            player.PlayerMessage += OnGameMessage;
-                            player.PlayerMessage -= OnRoomMessage;
-                        }
+                        player.PlayerMessage += OnGameMessage;
+                        player.PlayerMessage -= OnRoomMessage;
                     }
                 }
             }
@@ -144,7 +144,18 @@ namespace GameOnlineServer.Application.Handlers
 
         private void OnGameMessage(byte[] buffer)
         {
-            
+            try
+            {
+                Game info = (Game)buffer[0];
+                if(info == Game.PLAYER_POSITION)
+                {
+                    currentroom.SendByte((byte)Game.PLAYER_POSITION,buffer);
+                }
+            }
+            catch(Exception ex)
+            {
+                logger.Error("Error " + ex.Message);
+            }
         }
 
         public override void OnWsConnected(HttpRequest request)
@@ -209,7 +220,7 @@ namespace GameOnlineServer.Application.Handlers
         }
         private void PlayerJoinRoom(BaseRoom room)
         {
-            ChangeRoom(room);
+            ChangeLobby(room);
             this.SendByte((byte)Lobby.JOIN_ROOM_SUCCESS);
             room.JoinRoom(this);
             PlayerMessage = OnRoomMessage;
@@ -220,7 +231,10 @@ namespace GameOnlineServer.Application.Handlers
         }
         public void On_DisConnected()
         {
-            currentroom.ExitRoom(this);
+            if (currentroom!=null)
+            {
+                currentroom.ExitRoom(this);
+            }
         }
         public string GetPlayerInfo()
         {
@@ -228,11 +242,16 @@ namespace GameOnlineServer.Application.Handlers
             {
                 return userInfo.username;
             }
-            return null;
+            return "";
         }
         public void ChangeRoom(BaseRoom room)
         {
             if(currentroom != null) currentroom.ExitRoom(this);
+            currentroom = room;
+        }
+        public void ChangeLobby(BaseRoom room)
+        {
+            if (currentroom != null) currentroom.ExitLobby(this);
             currentroom = room;
         }
     }

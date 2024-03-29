@@ -6,6 +6,7 @@ namespace GameOnlineServer.Application.Interfaces
     public interface IPlayer
     {
         public event Action<byte[]> PlayerMessage;
+        public byte IdInRoom { get; set; }
         public string sessionId { get; set; }
         public string name { get; set; }
         public BaseRoom currentroom { get; set; }

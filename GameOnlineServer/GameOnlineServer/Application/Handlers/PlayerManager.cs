@@ -56,5 +56,15 @@ namespace GameOnlineServer.Application.Handlers
         {
             this.RemovePlayer(player.sessionId);
         }
+
+        public IPlayer FindPlayerByUsername(string username)
+        {
+            var player = Players.FirstOrDefault(p => p.Value.GetPlayerInfo().Equals(username));
+            if(player.Equals(default(KeyValuePair<string, IPlayer>)))
+            {
+                return null;
+            }
+            return player.Value;
+        }
     }
 }

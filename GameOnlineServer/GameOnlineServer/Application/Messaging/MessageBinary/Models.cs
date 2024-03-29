@@ -15,7 +15,8 @@ namespace GameOnlineServer.Application.Messaging.MessageBinary
         REGISTER_SUCCESS = 6,
         USERNAME_EXISTED = 7,
         JOIN_LOBBY_FAIL = 8,
-        JOIN_LOBBY_SUCCESS = 9
+        JOIN_LOBBY_SUCCESS = 9,
+        YOU_ARE_LOGGED_IN_SOMEWHERE_ELSE = 10
     }
     public enum Lobby : byte
     {
@@ -31,11 +32,27 @@ namespace GameOnlineServer.Application.Messaging.MessageBinary
         ROOM_INFO = 1,
         ROOM_CHAT = 2,
         ROOM_NAME = 3,
-        PLAY = 4
+        PLAY = 4,
+        NEW_PLAYER_JOIN_ROOM = 5,
+        PLAYER_LEAVE_ROOM = 6
     }
     public enum Game : byte
     {
-        GAME_INFO = 0
+        GAME_INFO = 7,
+        PLAYER_POSITION = 8
+    }
+    public enum Anim : byte
+    {
+        IDLE = 0,
+        RUN = 1,
+        ATTACK = 2,
+        DEATH = 3
+    }
+    public struct Direct
+    {
+        public sbyte x;
+        public sbyte y;
+        public Anim anim;
     }
     //Interface
     public interface ISerializable
@@ -103,50 +120,88 @@ namespace GameOnlineServer.Application.Messaging.MessageBinary
     }
     public class RoomMessage : ISerializable
     {
-        public List<string> namePlayer { get; set; }
-        public RoomMessage(List<string> namePlayer)
+        public Dictionary<byte, string> data;
+        public RoomMessage(Dictionary<byte, string> data)
         {
-            this.namePlayer = namePlayer;
+            this.data = data;
         }
         public RoomMessage(byte[] bytes)
         {
-            namePlayer = new List<string>();
+            data = new Dictionary<byte, string>();
             ConvertClass(bytes);
         }
         public byte[] ConvertByte()
         {
-            byte[] result = new byte[] { 255 };
-            byte length = (byte) namePlayer.Count;
+            byte[] result = new byte[] {255};
+            byte length = (byte)data.Count;
+            byte[] namelength = new byte[length];
+            byte index = 0;
+            foreach(var i in data.Values)
+            {
+                byte[] name = Encoding.UTF8.GetBytes(i);
+                namelength[index] = (byte)name.Length;
+                result = Add(result, name);
+                index++;
+            }
+            foreach (var i in data.Keys)
+            {
+                result = Append(result, i);
+            }
+            for(byte i = 0; i < length;i++)
+            {
+                result = Append(result, namelength[i]);
+            }
+            result = Append(result,length);
+            return result;
+        }
+        public void ConvertClass(byte[] data)
+        {
+            byte length = data[data.Length - 1];
+            byte indexStart = (byte)(data.Length - length - 1);
             byte[] len = new byte[length];
-            for(byte i = 0;i < length;i++)
+            byte[] id = new byte[length];
+            List<string> name = new List<string>();
+            for (byte i = indexStart; i < data.Length - 1; i++)
             {
-                byte[] name = Encoding.UTF8.GetBytes(namePlayer[i]);
-                len[i] = (byte)name.Length;
-                result = Add(result,name);
+                len[i - indexStart] = data[i];
+                id[i - indexStart] = data[i-length];
             }
-            for(byte i = 0;i < length;i++)
+            byte index = 1;
+            for (byte i = 0; i < length; i++)
             {
-                result = Append(result, len[i]);
+                this.data.Add(id[i],Encoding.UTF8.GetString(data, index, len[i]));
+                index += len[i];
             }
-            result = Append(result, length);
+        }
+    }
+    public class RoomUpdate : ISerializable
+    {
+        public KeyValuePair<byte, string> data;
+        public RoomUpdate(KeyValuePair<byte, string> data)
+        {
+            this.data = data;
+        }
+        public RoomUpdate(byte[] data)
+        {
+            ConvertClass(data);
+        }
+        public byte[] ConvertByte()
+        {
+            byte[] result = new byte[] { 255 };
+            byte[] name = Encoding.UTF8.GetBytes(data.Value);
+            byte namelenth =(byte) name.Length;
+            result = Add(result, name);
+            result = Append(result, namelenth);
+            result = Append(result, data.Key);
             return result;
         }
 
         public void ConvertClass(byte[] data)
         {
-            byte length = data[data.Length - 1];
-            byte[] len = new byte[length];
-            int indexStart = data.Length - length - 1;
-            for (int i = indexStart;i < data.Length - 1;i++)
-            {
-                len[i - indexStart] = data[i];
-            }
-            byte index = 1;
-            for(byte i = 0; i < length; i++)
-            {
-                namePlayer.Add(Encoding.UTF8.GetString(data, index, len[i]));
-                index += len[i];
-            }
+            byte key = data[data.Length-1];
+            byte namelength = data[data.Length - 2];
+            string value = Encoding.UTF8.GetString(data,1,namelength);
+            this.data = new KeyValuePair<byte, string>(key,value);
         }
     }
 }

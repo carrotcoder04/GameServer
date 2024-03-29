@@ -16,5 +16,6 @@ namespace GameOnlineServer.Application.Interfaces
         IPlayer FindPlayer(string id);
         IPlayer FindPlayer(IPlayer player);
         List<IPlayer> GetPlayers();
+        IPlayer FindPlayerByUsername(string username);
     }
 }

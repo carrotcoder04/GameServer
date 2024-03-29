@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameOnlineServer.Application.Messaging.MessageBinary;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,5 +42,81 @@ namespace GameOnlineServer.Application.Messaging.MessageBinary
             string result = Encoding.UTF8.GetString(bytes, 1, bytes.Length - 1);
             return result;
         }
+    }
+}
+public static class ConvertDirect
+{
+    public static Direct ByteToDirect(byte data)
+    {
+        Direct direct = new Direct();
+        byte x = (byte)((data & 12) >> 2);
+        byte y = (byte)(data & 3);
+        byte _anim = (byte)(data >> 4);
+        if (x == 0)
+        {
+            direct.x = 0;
+        }
+        else if (x == 1)
+        {
+            direct.x = 1;
+        }
+        else if (x == 2)
+        {
+            direct.x = -1;
+        }
+        if (y == 0)
+        {
+            direct.y = 0;
+        }
+        else if (y == 1)
+        {
+            direct.y = 1;
+        }
+        else if (y == 2)
+        {
+            direct.y = -1;
+        }
+        Anim anim = (Anim)_anim;
+        direct.anim = anim;
+        return direct;
+    }
+    public static byte DirectToByte(Direct direct)
+    {
+        byte result = 0;
+        if (direct.x == 0)
+        {
+
+        }
+        else if (direct.x == 1)
+        {
+            result = 4;
+        }
+        else if (direct.x == -1)
+        {
+            result = 8;
+        }
+        if (direct.y == 0)
+        {
+
+        }
+        else if (direct.y == 1)
+        {
+            result |= 1;
+        }
+        else if (direct.y == -1)
+        {
+            result |= 2;
+        }
+        byte _anim = (byte)((byte)(direct.anim) << 4);
+        result |= _anim;
+        return result;
+    }
+    public static byte[] PackTransform(byte id, byte direct)
+    {
+        byte[] data = new byte[]
+        {
+            (byte)Game.PLAYER_POSITION,id, direct
+        };
+        return data;
     }
 }

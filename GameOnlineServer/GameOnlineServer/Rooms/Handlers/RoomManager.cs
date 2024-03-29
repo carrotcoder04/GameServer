@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using static GameOnlineServer.Application.Actions.Actions;
 namespace GameOnlineServer.Rooms.Handlers
 {
     public class RoomManager : IRoomManager
@@ -13,7 +13,8 @@ namespace GameOnlineServer.Rooms.Handlers
         public BaseRoom lobby { get; set; }
         private ConcurrentDictionary<string,BaseRoom> rooms {  get; set; }
         public RoomManager()
-        { 
+        {
+            RequestRemoveRoom += RemoveRoom;
             lobby = new BaseRoom();
             rooms = new ConcurrentDictionary<string,BaseRoom>();
         }
@@ -27,6 +28,7 @@ namespace GameOnlineServer.Rooms.Handlers
             if (oldRoom != null)
             {
                 rooms.TryRemove(id, out var room);
+                Console.WriteLine($"{id} :{room!=null}");
                 return room != null;
             }
             return false;
@@ -34,7 +36,7 @@ namespace GameOnlineServer.Rooms.Handlers
         public BaseRoom CreateRoom()
         {
             var newRoom = new BaseRoom();
-            rooms.TryAdd(newRoom.id, newRoom);
+            rooms.TryAdd(newRoom.idroom, newRoom);
             return newRoom;
         }
     }
